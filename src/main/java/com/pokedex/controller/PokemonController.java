@@ -1,6 +1,8 @@
 package com.pokedex.controller;
 
+import com.pokedex.model.PokemonEvent;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +20,10 @@ import com.pokedex.repository.PokedexReporitory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
+
 @RestController
-@RequestMapping("/podemons")
+@RequestMapping("/pokemons")
 public class PokemonController {
 	
 	private PokedexReporitory pokedexReporitory;
@@ -72,6 +76,12 @@ public class PokemonController {
 	@DeleteMapping
 	public Mono<Void> deleteAllPokemons() {
 		return pokedexReporitory.deleteAll();
+	}
+
+	@GetMapping(value = "/event", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	public Flux<PokemonEvent> getPokemonEvent() {
+		return Flux.interval(Duration.ofSeconds(5))
+				.map(val -> new PokemonEvent(val, "Evento de Pokemon"));
 	}
 
 }
